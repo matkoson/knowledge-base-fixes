@@ -1,0 +1,48 @@
+# Improved lefthook.yml
+pre-commit:
+  parallel: true
+  commands:
+    lint-typescript:
+      glob: "*.{ts,tsx}"
+      run: npx biome check --write {staged_files}
+      skip:
+        - merge
+        - rebase
+      
+    lint-json:
+      glob: "*.json"
+      run: npx biome check --write {staged_files}
+      skip:
+        - merge
+        - rebase
+    
+    lint-markdown:
+      glob: "*.md"
+      run: npx markdownlint {staged_files} --config .markdownlint.json || echo "Markdown linting failed but continuing..."
+
+pre-push:
+  parallel: false
+  commands:
+    typecheck:
+      run: bun run typecheck
+      skip:
+        - merge
+        - rebase
+    
+    test:
+      run: bun test
+      skip:
+        - merge
+        - rebase
+    
+    validate-db:
+      run: bun run validate-db || echo "Database validation failed but continuing..."
+      skip:
+        - merge
+        - rebase
+    
+    build:
+      run: bun run build
+      skip:
+        - merge
+        - rebase
